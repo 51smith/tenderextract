@@ -8,6 +8,7 @@ import uuid
 import os
 
 from langextract import extract
+from langextract.data import ExampleData
 import google.generativeai as genai
 from pydantic import BaseModel, Field
 
@@ -287,19 +288,252 @@ Ensure accurate extraction of Dutch procurement terminology.
     ) -> TenderExtractionSchema:
         """Perform the actual LangExtract extraction."""
         try:
+            from langextract.data import Extraction, CharInterval
+            
+            # Create comprehensive examples covering all TenderExtractionSchema fields
+            examples = [
+                ExampleData(
+                    text="""Tender voor IT Infrastructure Modernization Project
+
+Aanbestedende dienst: Gemeente Amsterdam
+Projectomschrijving: Complete modernisering van de IT-infrastructuur voor betere digitale dienstverlening aan inwoners.
+Projectomvang: Het project behelst de vervanging van legacy systemen en implementatie van cloud-native oplossingen.
+
+Contractdetails:
+- Type contract: Dienstverlening
+- Geschatte waarde: €750.000 EUR  
+- Contractduur: 24 maanden
+- Betalingsvoorwaarden: Maandelijkse termijnen na goedkeuring
+
+Belangrijke datums:
+- Publicatiedatum: 10 januari 2024
+- Deadline voor vragen: 5 februari 2024
+- Inleverdeadline: 15 februari 2024 om 17:00
+- Verwachte startdatum: 1 maart 2024
+
+CPV classificatie: 48000000-8 (Software package and information systems)
+
+Uitsluitingscriteria:
+- Geen faillissement in afgelopen 3 jaar
+- Minimaal 5 jaar ervaring met IT-infrastructuur
+
+Selectiecriteria:
+- ISO 27001 certificering vereist  
+- Referenties van minimaal 3 vergelijkbare projecten
+
+Gunningscriteria:
+- Prijs: 40%
+- Technische kwaliteit: 35%
+- Duurzaamheid: 25%
+
+Contactpersonen:
+- Jan Janssen, Projectmanager, j.janssen@amsterdam.nl, 020-1234567
+- Maria de Vries, Inkoop specialist, m.devries@amsterdam.nl
+
+Deliverables:
+- Technisch ontwerp en architectuur
+- Implementatie en migratie van systemen
+- Gebruikerstraining en documentatie
+
+Technische eisen:
+- Cloud-native architectuur vereist
+- API-first approach
+- 99.9% uptime garantie
+
+Compliance eisen:
+- AVG/GDPR compliant
+- NEN 7510 certificering
+- BIO (Baseline Informatiebeveiliging Overheid)""",
+                    extractions=[
+                        Extraction(extraction_class="project_title", extraction_text="IT Infrastructure Modernization Project", char_interval=CharInterval(start_pos=11, end_pos=50)),
+                        Extraction(extraction_class="contracting_authority", extraction_text="Gemeente Amsterdam", char_interval=CharInterval(start_pos=72, end_pos=90)),
+                        Extraction(extraction_class="project_description", extraction_text="Complete modernisering van de IT-infrastructuur voor betere digitale dienstverlening aan inwoners.", char_interval=CharInterval(start_pos=108, end_pos=207)),
+                        Extraction(extraction_class="project_scope", extraction_text="Het project behelst de vervanging van legacy systemen en implementatie van cloud-native oplossingen.", char_interval=CharInterval(start_pos=224, end_pos=325)),
+                        Extraction(extraction_class="contract_type", extraction_text="Dienstverlening", char_interval=CharInterval(start_pos=358, end_pos=373)),
+                        Extraction(extraction_class="estimated_value", extraction_text="750000", char_interval=CharInterval(start_pos=395, end_pos=401)),
+                        Extraction(extraction_class="currency", extraction_text="EUR", char_interval=CharInterval(start_pos=403, end_pos=406)),
+                        Extraction(extraction_class="contract_duration", extraction_text="24 maanden", char_interval=CharInterval(start_pos=424, end_pos=434)),
+                        Extraction(extraction_class="payment_terms", extraction_text="Maandelijkse termijnen na goedkeuring", char_interval=CharInterval(start_pos=457, end_pos=495)),
+                        Extraction(extraction_class="publication_date", extraction_text="10 januari 2024", char_interval=CharInterval(start_pos=538, end_pos=554)),
+                        Extraction(extraction_class="question_deadline", extraction_text="5 februari 2024", char_interval=CharInterval(start_pos=577, end_pos=593)),
+                        Extraction(extraction_class="submission_deadline", extraction_text="15 februari 2024 om 17:00", char_interval=CharInterval(start_pos=612, end_pos=638)),
+                        Extraction(extraction_class="project_start_date", extraction_text="1 maart 2024", char_interval=CharInterval(start_pos=660, end_pos=672)),
+                        Extraction(extraction_class="cpv_codes", extraction_text="48000000-8", char_interval=CharInterval(start_pos=691, end_pos=701)),
+                        Extraction(extraction_class="knockout_criteria", extraction_text="Geen faillissement in afgelopen 3 jaar", char_interval=CharInterval(start_pos=767, end_pos=806)),
+                        Extraction(extraction_class="knockout_criteria", extraction_text="Minimaal 5 jaar ervaring met IT-infrastructuur", char_interval=CharInterval(start_pos=809, end_pos=856)),
+                        Extraction(extraction_class="selection_criteria", extraction_text="ISO 27001 certificering vereist", char_interval=CharInterval(start_pos=876, end_pos=908)),
+                        Extraction(extraction_class="selection_criteria", extraction_text="Referenties van minimaal 3 vergelijkbare projecten", char_interval=CharInterval(start_pos=911, end_pos=962)),
+                        Extraction(extraction_class="assessment_criteria", extraction_text="Prijs: 40%", char_interval=CharInterval(start_pos=980, end_pos=990)),
+                        Extraction(extraction_class="assessment_criteria", extraction_text="Technische kwaliteit: 35%", char_interval=CharInterval(start_pos=993, end_pos=1019)),
+                        Extraction(extraction_class="assessment_criteria", extraction_text="Duurzaamheid: 25%", char_interval=CharInterval(start_pos=1022, end_pos=1040)),
+                        Extraction(extraction_class="contact_persons", extraction_text="Jan Janssen, Projectmanager, j.janssen@amsterdam.nl, 020-1234567", char_interval=CharInterval(start_pos=1060, end_pos=1126)),
+                        Extraction(extraction_class="contact_persons", extraction_text="Maria de Vries, Inkoop specialist, m.devries@amsterdam.nl", char_interval=CharInterval(start_pos=1129, end_pos=1187)),
+                        Extraction(extraction_class="deliverables", extraction_text="Technisch ontwerp en architectuur", char_interval=CharInterval(start_pos=1203, end_pos=1237)),
+                        Extraction(extraction_class="deliverables", extraction_text="Implementatie en migratie van systemen", char_interval=CharInterval(start_pos=1240, end_pos=1279)),
+                        Extraction(extraction_class="deliverables", extraction_text="Gebruikerstraining en documentatie", char_interval=CharInterval(start_pos=1282, end_pos=1317)),
+                        Extraction(extraction_class="technical_requirements", extraction_text="Cloud-native architectuur vereist", char_interval=CharInterval(start_pos=1336, end_pos=1370)),
+                        Extraction(extraction_class="technical_requirements", extraction_text="API-first approach", char_interval=CharInterval(start_pos=1373, end_pos=1391)),
+                        Extraction(extraction_class="technical_requirements", extraction_text="99.9% uptime garantie", char_interval=CharInterval(start_pos=1394, end_pos=1415)),
+                        Extraction(extraction_class="compliance_requirements", extraction_text="AVG/GDPR compliant", char_interval=CharInterval(start_pos=1435, end_pos=1453)),
+                        Extraction(extraction_class="compliance_requirements", extraction_text="NEN 7510 certificering", char_interval=CharInterval(start_pos=1456, end_pos=1479)),
+                        Extraction(extraction_class="compliance_requirements", extraction_text="BIO (Baseline Informatiebeveiliging Overheid)", char_interval=CharInterval(start_pos=1482, end_pos=1528))
+                    ]
+                )
+            ]
+            
             # Use functional LangExtract API to extract structured data
             result = extract(
                 text_or_documents=text,
                 prompt_description=prompt,
-                model_id="gemini-1.5-pro",
+                model_id="gemini-2.5-pro",
                 api_key=self.api_key,
                 temperature=0.1,
-                format_type="json"
+                examples=examples
             )
+            
+            logger.info(f"LangExtract result type: {type(result)}")
+            logger.info(f"LangExtract result attributes: {dir(result)}")
+            logger.info(f"LangExtract result: {result}")
+            
             # Convert the result to our schema format
-            if hasattr(result, 'data') and result.data:
-                return TenderExtractionSchema(**result.data[0])
+            if hasattr(result, 'extractions') and result.extractions:
+                logger.info(f"Found {len(result.extractions)} extractions")
+                
+                # Parse extractions into our schema with proper data type conversion
+                extracted_data = {}
+                
+                for extraction in result.extractions:
+                    logger.info(f"Extraction: {extraction.extraction_class} = '{extraction.extraction_text}'")
+                    
+                    field_name = extraction.extraction_class
+                    field_value = extraction.extraction_text
+                    
+                    # Handle field mapping and data type conversion
+                    if field_name in extracted_data:
+                        # Handle multiple values for list fields that expect dictionaries
+                        if field_name in ["knockout_criteria", "selection_criteria", "deliverables"]:
+                            if isinstance(extracted_data[field_name], list):
+                                extracted_data[field_name].append({"description": field_value, "requirement": field_value})
+                        # Handle multiple values for simple list fields
+                        elif field_name in ["cpv_codes", "technical_requirements", "compliance_requirements"]:
+                            if isinstance(extracted_data[field_name], list):
+                                if field_value not in extracted_data[field_name]:
+                                    extracted_data[field_name].append(field_value)
+                        # Handle multiple values for assessment_criteria dict
+                        elif field_name in ["assessment_criteria"]:
+                            if isinstance(extracted_data[field_name], dict):
+                                # Apply the same parsing logic as in the main handler
+                                if ":" in field_value and ("%" in field_value or any(c.isdigit() for c in field_value.split(':')[1])):
+                                    try:
+                                        parts = field_value.split(":")
+                                        if len(parts) == 2:
+                                            criteria_name = parts[0].strip()
+                                            weight_str = parts[1].strip().replace("%", "")
+                                            weight = float(weight_str) / 100.0 if "%" in field_value else float(weight_str)
+                                            extracted_data[field_name][criteria_name] = weight
+                                    except ValueError:
+                                        pass  # Skip invalid values
+                        # Handle multiple values for other fields (take the longer/more detailed value)
+                        else:
+                            if len(field_value) > len(str(extracted_data[field_name])):
+                                extracted_data[field_name] = field_value
+                    else:
+                        # Convert values to appropriate data types
+                        if field_name == "estimated_value":
+                            try:
+                                # Convert to float, handling common formatting
+                                clean_value = field_value.replace('.', '').replace(',', '').replace('€', '').replace('EUR', '').replace('-', '').strip()
+                                # Handle cases like "120.000 per jaar" - extract just the number part
+                                import re
+                                number_match = re.search(r'(\d+(?:[,.]?\d+)*)', clean_value)
+                                if number_match:
+                                    number_str = number_match.group(1).replace(',', '').replace('.', '')
+                                    extracted_data[field_name] = float(number_str)
+                                else:
+                                    logger.warning(f"Could not extract number from estimated_value '{field_value}'")
+                                    extracted_data[field_name] = None
+                            except (ValueError, TypeError):
+                                logger.warning(f"Could not convert estimated_value '{field_value}' to float")
+                                extracted_data[field_name] = None
+                        elif field_name in ["cpv_codes", "technical_requirements", "compliance_requirements"]:
+                            # Handle simple list fields (List[str])
+                            if field_name not in extracted_data:
+                                extracted_data[field_name] = []
+                            if field_value and field_value not in extracted_data[field_name]:
+                                extracted_data[field_name].append(field_value)
+                        elif field_name in ["deliverables"]:
+                            # Handle deliverables list (List[Dict[str, Any]])
+                            if field_name not in extracted_data:
+                                extracted_data[field_name] = []
+                            if field_value:
+                                extracted_data[field_name].append({"description": field_value, "name": field_value})
+                        elif field_name in ["knockout_criteria", "selection_criteria"]:
+                            # Handle criteria lists (List[Dict[str, Any]])
+                            if field_name not in extracted_data:
+                                extracted_data[field_name] = []
+                            if field_value:
+                                extracted_data[field_name].append({"description": field_value, "requirement": field_value})
+                        elif field_name in ["assessment_criteria"]:
+                            # Handle assessment criteria dict - try to parse criteria:weight pairs
+                            if field_name not in extracted_data:
+                                extracted_data[field_name] = {}
+                            if field_value:
+                                # Try to parse criteria like "Prijs: 40%" or similar structured patterns
+                                if ":" in field_value and ("%" in field_value or any(c.isdigit() for c in field_value.split(':')[1])):
+                                    try:
+                                        parts = field_value.split(":")
+                                        if len(parts) == 2:
+                                            criteria_name = parts[0].strip()
+                                            weight_str = parts[1].strip().replace("%", "")
+                                            weight = float(weight_str) / 100.0 if "%" in field_value else float(weight_str)
+                                            extracted_data[field_name][criteria_name] = weight
+                                        else:
+                                            # If it doesn't look like criteria, skip it (don't add)
+                                            logger.info(f"Skipping assessment_criteria value that doesn't match criteria pattern: '{field_value}'")
+                                    except ValueError:
+                                        # If parsing fails, skip it (don't add)  
+                                        logger.info(f"Skipping assessment_criteria value that couldn't be parsed: '{field_value}'")
+                                else:
+                                    # If it doesn't contain a colon and digits, skip it (don't add general text)
+                                    logger.info(f"Skipping assessment_criteria value that doesn't match criteria pattern: '{field_value}'")
+                        elif field_name in ["contact_persons"]:
+                            # Handle contact persons list
+                            if field_name not in extracted_data:
+                                extracted_data[field_name] = []
+                            if field_value:
+                                # Parse contact info - this is simplified
+                                extracted_data[field_name].append({"name": field_value})
+                        elif field_name.endswith("_date") or field_name.endswith("_deadline"):
+                            # Handle date fields - would need proper date parsing
+                            try:
+                                from dateutil import parser
+                                parsed_date = parser.parse(field_value, fuzzy=True)
+                                extracted_data[field_name] = parsed_date
+                            except:
+                                logger.warning(f"Could not parse date '{field_value}' for field '{field_name}'")
+                                extracted_data[field_name] = None
+                        else:
+                            # Regular string fields
+                            extracted_data[field_name] = field_value
+                
+                logger.info(f"Processed extracted data: {extracted_data}")
+                
+                # Debug: try to create schema and catch detailed validation errors
+                try:
+                    schema = TenderExtractionSchema(**extracted_data)
+                    logger.info(f"Successfully created schema: {schema}")
+                    return schema
+                except Exception as e:
+                    logger.error(f"Schema validation failed: {e}")
+                    logger.error(f"Raw extracted data: {extracted_data}")
+                    logger.error(f"Error type: {type(e)}")
+                    # Print more detailed error info
+                    if hasattr(e, 'errors'):
+                        logger.error(f"Validation error details: {e.errors()}")
+                    # Return empty schema on validation failure 
+                    return TenderExtractionSchema()
             else:
+                logger.warning("No extractions returned from LangExtract")
                 return TenderExtractionSchema()
         except Exception as e:
             logger.error(f"LangExtract extraction failed: {e}")
