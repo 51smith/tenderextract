@@ -1,0 +1,1 @@
+"""Data models for tender extraction."""

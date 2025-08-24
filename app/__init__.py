@@ -1,0 +1,1 @@
+"""Tender extraction FastAPI application."""
